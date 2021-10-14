@@ -12,7 +12,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
-            android:id="@+id/currency_name"
+            android:id="@+id/settings_currency_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
@@ -24,29 +24,30 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/amount_of_value"
+            android:id="@+id/settings_amount_of_value"
             android:textSize="12sp"
             android:layout_marginStart="10dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/currency_name"/>
+            app:layout_constraintTop_toBottomOf="@id/settings_currency_name"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:layout_marginStart="8dp"
-            android:id="@+id/currency_full_name"
-            app:layout_constraintTop_toBottomOf="@id/currency_name"
-            app:layout_constraintStart_toEndOf="@id/amount_of_value"/>
+            android:id="@+id/setting_currency_full_name"
+            app:layout_constraintTop_toBottomOf="@id/settings_currency_name"
+            app:layout_constraintStart_toEndOf="@id/settings_amount_of_value"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RadioButton
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/currency_switcher"
+        android:id="@+id/settings_currency_switcher"
+        android:checked="true"
         android:layout_marginEnd="30dp"
-        app:layout_constraintEnd_toStartOf="@id/currency_reorder"
+        app:layout_constraintEnd_toStartOf="@id/settings_currency_reorder"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />
@@ -54,7 +55,7 @@
     <ImageView
         android:layout_width="?listPreferredItemHeight"
         android:layout_height="wrap_content"
-        android:id="@+id/currency_reorder"
+        android:id="@+id/settings_currency_reorder"
         android:src="@drawable/ic_reorder"
         android:layout_marginEnd="40dp"
         app:layout_constraintEnd_toEndOf="parent"
