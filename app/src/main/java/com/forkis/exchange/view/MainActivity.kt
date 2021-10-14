@@ -1,4 +1,4 @@
-package com.forkis.exchange
+package com.forkis.exchange.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +20,7 @@ import com.forkis.exchange.presenter.viewHolder.CurrencyAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textview.MaterialTextView
 import android.net.ConnectivityManager
+import com.forkis.exchange.R
 import com.forkis.exchange.model.CurrenciesItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -50,15 +51,16 @@ class MainActivity : AppCompatActivity(){
 
     }
 
-
     override fun onResume() {
-        invalidateOptionsMenu()
+        super.onResume()
+
         val date = SetDate()
         date.setTomorrowDate(todayDate, tomorrowDate)
         if (currencies.first.size == 0) {
             GlobalScope.launch (Dispatchers.IO){
-            currency = SetCurrency.loadData(date, oopsText, progressBar, progressText, currency, currencyAdapter, todayDate, tomorrowDate)
-            currencies = createCurrencies(currency)
+                currency = SetCurrency.loadData(date, oopsText, progressBar, progressText, currency, currencyAdapter, todayDate, tomorrowDate)
+                currencies = createCurrencies(currency)
+
             }
         } else {
             val secondaryCurrencies = SetCurrency.setCurrency(currencies)
@@ -66,11 +68,43 @@ class MainActivity : AppCompatActivity(){
             currencyAdapter.notifyDataSetChanged()
         }
 
-        super.onResume()
+        if (currencies.first.size == 0){
+            setVisibility(oopsText, false)
+        }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        if (!isOnline()) {
+            menu?.findItem(R.id.action_settings)?.isVisible = false
+
+        }
+        return super.onCreateOptionsMenu(menu)
+
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                intent.putExtra("first", currencies.first)
+                intent.putExtra("second", currencies.second)
+                resultLauncher.launch(intent)
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+
+        }
     }
 
 
 
+    /**
+     * Register value to use in StartActivityForResult
+     */
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
@@ -85,7 +119,9 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-
+    /**
+     * Initialise parts of layout in Activity
+     */
     private fun initialise(){
         mainActionBar = findViewById(R.id.main_action_bar)
         oopsText = findViewById(R.id.oops_text)
@@ -113,68 +149,62 @@ class MainActivity : AppCompatActivity(){
         setActionBar()
     }
 
-    fun isOnline(): Boolean {
+
+    /**
+     * Check if App have connection to the internet
+     */
+    private fun isOnline(): Boolean {
         val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         return cm.activeNetworkInfo != null &&
                 cm.activeNetworkInfo!!.isConnectedOrConnecting
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        if (!isOnline()) {
-            menu?.findItem(R.id.action_settings)?.isVisible = false
-        }
-        return super.onCreateOptionsMenu(menu)
-
-    }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
-            R.id.action_settings-> {
-                val intent = Intent(this, SettingsActivity::class.java)
-
-
-                intent.putExtra("first", currencies.first)
-                intent.putExtra("second", currencies.second)
-                resultLauncher.launch(intent)
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-
-        }
-    }
-
+    /**
+     * Set action bar to the Activity
+     */
     private fun setActionBar(actionBar: MaterialToolbar = mainActionBar){
         setSupportActionBar(actionBar)
     }
 
 
     companion object {
-        fun setVisibility(view: View, boolean: Boolean) {
-            view.visibility = if (boolean) View.VISIBLE
+        /**
+         * Set visibility of object
+         * @param view = view, that will be visible/invisible
+         * @param isVisible = if true, view will be visible, else invisible
+         */
+        fun setVisibility(view: View, isVisible: Boolean) {
+            view.visibility = if (isVisible) View.VISIBLE
             else View.INVISIBLE
         }
 
-        fun createCurrencies(currency: Pair<Currencies, Currencies>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>{
+
+        /**
+         * Create Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>> from Pair<Currencies, Currencies>
+         */
+        fun createCurrencies(currency: Pair<Currencies, Currencies>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>> {
             val currencyFirst = arrayListOf<CurrenciesItem>()
             val currencySecond = arrayListOf<CurrenciesItem>()
-            for (i in currency.first){
+            for (i in currency.first) {
                 currencyFirst.add(
-                    CurrenciesItem(i.curAbbreviation, i.curID,
-                        i.curName, i.curOfficialRate, i.curScale, i.date)
+                    CurrenciesItem(
+                        i.curAbbreviation, i.curID,
+                        i.curName, i.curOfficialRate, i.curScale, i.date
+                    )
                 )
             }
 
-            for (i in currency.second){
+            for (i in currency.second) {
                 currencySecond.add(
-                    CurrenciesItem(i.curAbbreviation, i.curID,
-                        i.curName, i.curOfficialRate, i.curScale, i.date)
+                    CurrenciesItem(
+                        i.curAbbreviation, i.curID,
+                        i.curName, i.curOfficialRate, i.curScale, i.date
+                    )
                 )
             }
-            val currencies = Pair(currencyFirst, currencySecond)
-            return currencies
+            return Pair(currencyFirst, currencySecond)
         }
 
     }

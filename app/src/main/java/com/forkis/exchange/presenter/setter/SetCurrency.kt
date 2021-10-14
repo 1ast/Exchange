@@ -2,10 +2,9 @@ package com.forkis.exchange.presenter.setter
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.forkis.exchange.MainActivity.Companion.setVisibility
+import com.forkis.exchange.view.MainActivity.Companion.setVisibility
 import com.forkis.exchange.model.Currencies
 import com.forkis.exchange.model.CurrenciesItem
 import com.forkis.exchange.presenter.downloader.ExchangeAPI
@@ -14,7 +13,11 @@ import kotlinx.coroutines.*
 
 class SetCurrency {
     companion object {
-        @DelicateCoroutinesApi
+
+
+        /**
+         * Load Data from server
+         */
         suspend fun loadData(
             date: SetDate, oopsText: TextView, progressBar: ProgressBar, progressText: TextView,
             currencies: Pair<Currencies, Currencies>, currencyAdapter: CurrencyAdapter,
@@ -91,6 +94,12 @@ class SetCurrency {
             return currency
         }
 
+
+        /**
+         * Function, that add to list if curID not 0
+         * @param currencies = list of CurrenciesItem
+         * @return updated list of currencies
+         */
         fun setCurrency(currencies: Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>{
             val secondaryCurrencies = Pair(arrayListOf<CurrenciesItem>(), arrayListOf<CurrenciesItem>())
             for (i in currencies.second.indices) {

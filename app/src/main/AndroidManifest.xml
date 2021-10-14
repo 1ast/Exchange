@@ -14,14 +14,14 @@
         android:theme="@style/Theme.Exchange"
         android:fullBackupContent="@xml/backup_descriptor">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".view.SettingsActivity"
             android:label="@string/settings"
             android:exported="true">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".view.MainActivity"/>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:exported="true">
 
             <intent-filter>

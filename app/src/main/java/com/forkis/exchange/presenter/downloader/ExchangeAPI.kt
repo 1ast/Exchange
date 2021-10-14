@@ -21,6 +21,7 @@ interface ExchangeAPI {
         }
     }
 
+
     @GET("./rates")
     suspend fun getRates(
         @Query("ondate") date: String,
