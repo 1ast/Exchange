@@ -20,7 +20,6 @@ import com.forkis.exchange.presenter.viewHolder.CurrencyAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textview.MaterialTextView
 import android.net.ConnectivityManager
-import android.util.Log
 import com.forkis.exchange.model.CurrenciesItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -54,7 +53,6 @@ class MainActivity : AppCompatActivity(){
 
     override fun onResume() {
         invalidateOptionsMenu()
-        Log.d("ON", "Resume")
         val date = SetDate()
         date.setTomorrowDate(todayDate, tomorrowDate)
         if (currencies.first.size == 0) {
@@ -63,13 +61,7 @@ class MainActivity : AppCompatActivity(){
             currencies = createCurrencies(currency)
             }
         } else {
-            val secondaryCurrencies = Pair(arrayListOf<CurrenciesItem>(), arrayListOf<CurrenciesItem>())
-            for (i in currencies.second.indices) {
-                if (currencies.second[i].curID != 0){
-                    secondaryCurrencies.first.add(currencies.first[i])
-                    secondaryCurrencies.second.add(currencies.second[i])
-                }
-            }
+            val secondaryCurrencies = SetCurrency.setCurrency(currencies)
             currencyAdapter.currencies = secondaryCurrencies
             currencyAdapter.notifyDataSetChanged()
         }
@@ -77,14 +69,6 @@ class MainActivity : AppCompatActivity(){
         super.onResume()
     }
 
-
-
-    companion object {
-        fun setVisibility(view: View, boolean: Boolean) {
-            view.visibility = if (boolean) View.VISIBLE
-            else View.INVISIBLE
-        }
-    }
 
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -95,7 +79,6 @@ class MainActivity : AppCompatActivity(){
                 val currenciesSecond = data.getSerializableExtra("Second") as? ArrayList<CurrenciesItem>
                 if (currenciesFirst != null && currenciesSecond != null) {
                     currencies = Pair(currenciesFirst, currenciesSecond)
-                    Log.d("RESULT", currencies.toString())
                 }
             }
         }
@@ -145,26 +128,6 @@ class MainActivity : AppCompatActivity(){
 
     }
 
-    fun createCurrencies(currency: Pair<Currencies, Currencies>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>{
-        val currencyFirst = arrayListOf<CurrenciesItem>()
-        val currencySecond = arrayListOf<CurrenciesItem>()
-        Log.d("MAIN", currency.toString())
-        for (i in currency.first){
-            currencyFirst.add(
-                CurrenciesItem(i.curAbbreviation, i.curID,
-                    i.curName, i.curOfficialRate, i.curScale, i.date)
-            )
-        }
-
-        for (i in currency.second){
-            currencySecond.add(
-                CurrenciesItem(i.curAbbreviation, i.curID,
-                    i.curName, i.curOfficialRate, i.curScale, i.date)
-            )
-        }
-        currencies = Pair(currencyFirst, currencySecond)
-        return currencies
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
@@ -185,6 +148,35 @@ class MainActivity : AppCompatActivity(){
 
     private fun setActionBar(actionBar: MaterialToolbar = mainActionBar){
         setSupportActionBar(actionBar)
+    }
+
+
+    companion object {
+        fun setVisibility(view: View, boolean: Boolean) {
+            view.visibility = if (boolean) View.VISIBLE
+            else View.INVISIBLE
+        }
+
+        fun createCurrencies(currency: Pair<Currencies, Currencies>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>{
+            val currencyFirst = arrayListOf<CurrenciesItem>()
+            val currencySecond = arrayListOf<CurrenciesItem>()
+            for (i in currency.first){
+                currencyFirst.add(
+                    CurrenciesItem(i.curAbbreviation, i.curID,
+                        i.curName, i.curOfficialRate, i.curScale, i.date)
+                )
+            }
+
+            for (i in currency.second){
+                currencySecond.add(
+                    CurrenciesItem(i.curAbbreviation, i.curID,
+                        i.curName, i.curOfficialRate, i.curScale, i.date)
+                )
+            }
+            val currencies = Pair(currencyFirst, currencySecond)
+            return currencies
+        }
+
     }
 
 

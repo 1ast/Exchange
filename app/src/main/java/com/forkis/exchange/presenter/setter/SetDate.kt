@@ -12,8 +12,6 @@ class SetDate {
     fun setTomorrowDate(today: TextView, tomorrow: TextView){
         val todayText = "${todayDateTime.dayOfMonth}.${todayDateTime.monthOfYear}.${todayDateTime.year}"
         val tomorrowText = "${tomorrowDateTime.dayOfMonth}.${tomorrowDateTime.monthOfYear}.${tomorrowDateTime.year}"
-        Log.d("TODAY", todayText)
-        Log.d("TOMORROW", tomorrowText)
 
         today.text = todayText
         tomorrow.text = tomorrowText
@@ -22,9 +20,6 @@ class SetDate {
     fun setYesterdayDate(today: TextView, tomorrow: TextView){
         val todayText = "${yesterdayDateTime.dayOfMonth}.${yesterdayDateTime.monthOfYear}.${yesterdayDateTime.year}"
         val tomorrowText = "${todayDateTime.dayOfMonth}.${todayDateTime.monthOfYear}.${todayDateTime.year}"
-        Log.d("TODAY", todayText)
-        Log.d("TOMORROW", tomorrowText)
-
         today.text = todayText
         tomorrow.text = tomorrowText
 

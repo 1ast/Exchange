@@ -6,12 +6,21 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.forkis.exchange.model.Currencies
 import com.forkis.exchange.model.CurrenciesItem
 import com.forkis.exchange.presenter.Listener.SettingsAdapterListener
 import com.forkis.exchange.presenter.viewHolder.SettingsAdapter
 import com.google.android.material.appbar.MaterialToolbar
+import androidx.annotation.NonNull
+
+import java.util.Collections
+
+import android.icu.number.Precision.currency
+
+
+
 
 class SettingsActivity : AppCompatActivity(), SettingsAdapterListener {
 
@@ -33,7 +42,6 @@ class SettingsActivity : AppCompatActivity(), SettingsAdapterListener {
             currenciesFirst = intent.getSerializableExtra("first") as ArrayList<CurrenciesItem>
             currenciesSecond = intent.getSerializableExtra("second") as ArrayList<CurrenciesItem>
             currency = Pair(currenciesFirst, currenciesSecond)
-            Log.d("SETTINGS", currency.toString())
         }
 
         initialise()
@@ -49,9 +57,37 @@ class SettingsActivity : AppCompatActivity(), SettingsAdapterListener {
         settingsList = findViewById(R.id.settings_list)
         settingsAdapter = SettingsAdapter(currency, this)
         settingsList.adapter = settingsAdapter
+
+        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(settingsList)
+
         setActionBar()
+
+
+
     }
 
+
+    val simpleCallback: ItemTouchHelper.SimpleCallback = object :
+        ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END,
+            0
+        ) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val fromPosition = viewHolder.adapterPosition
+            val toPosition = target.adapterPosition
+            Collections.swap(currency.first, fromPosition, toPosition)
+            Collections.swap(currency.second, fromPosition, toPosition)
+            recyclerView.adapter!!.notifyItemMoved(fromPosition, toPosition)
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+    }
 
     fun setActionBar(actionBar: MaterialToolbar = settingsActionBar) {
         setSupportActionBar(actionBar)
@@ -80,11 +116,8 @@ class SettingsActivity : AppCompatActivity(), SettingsAdapterListener {
                 currency.second[adapterPosition].curID = 0
             }
             true -> {
-                Log.d("SWITCH", currency.first[adapterPosition].curID.toString())
                 currency.second[adapterPosition].curID = currency.first[adapterPosition].curID
-                Log.d("SWITCH", currency.second[adapterPosition].curID.toString())
             }
         }
-        Log.d("SETTINGS", currency.toString())
     }
 }

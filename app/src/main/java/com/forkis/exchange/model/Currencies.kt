@@ -23,8 +23,6 @@ class Currencies() : ArrayList<CurrenciesItem>(), Parcelable{
                 parcel.readInt(),
                 parcel.readString()!!)
 
-            Log.d("Currency", CurrenciesItem.toString())
-
             this.add(r)
         }
     }

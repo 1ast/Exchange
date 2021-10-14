@@ -7,6 +7,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.forkis.exchange.MainActivity.Companion.setVisibility
 import com.forkis.exchange.model.Currencies
+import com.forkis.exchange.model.CurrenciesItem
 import com.forkis.exchange.presenter.downloader.ExchangeAPI
 import com.forkis.exchange.presenter.viewHolder.CurrencyAdapter
 import kotlinx.coroutines.*
@@ -33,7 +34,6 @@ class SetCurrency {
 
             var currency = currencies
             val job = GlobalScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-                Log.d("Coroutines", "Launched")
                 val exchangeAPI = ExchangeAPI()
                 var isComplete = true
                 val todayCurrency = exchangeAPI.getRates(
@@ -80,18 +80,29 @@ class SetCurrency {
                     Handler(Looper.getMainLooper()).post {
                         currencyAdapter.currencies = currency
                         currencyAdapter.notifyItemChanged(0)
-                        Log.d("adapter", currencyAdapter.currencies.toString())
                         setVisibility(progressBar, false)
                         setVisibility(progressText, false)
                         setVisibility(todayTextView, true)
                         setVisibility(tomorrowTextView, true)
                     }
                 }
-                Log.d("SETCURRENCY", currency.toString())
             }
             job.join()
             return currency
         }
+
+        fun setCurrency(currencies: Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>): Pair<ArrayList<CurrenciesItem>, ArrayList<CurrenciesItem>>{
+            val secondaryCurrencies = Pair(arrayListOf<CurrenciesItem>(), arrayListOf<CurrenciesItem>())
+            for (i in currencies.second.indices) {
+                if (currencies.second[i].curID != 0){
+                    secondaryCurrencies.first.add(currencies.first[i])
+                    secondaryCurrencies.second.add(currencies.second[i])
+                }
+            }
+            return secondaryCurrencies
+        }
+
+
 
     }
 }
